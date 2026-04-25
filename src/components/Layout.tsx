@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Clients from "../pages/Clients";
 
 // 👉 componente separado (profissional)
 function LogoutButton() {
@@ -57,7 +58,7 @@ export default function Layout() {
 
       {/* CONTEÚDO */}
       <div style={styles.content}>
-        {page === "clients" && <div>Clientes (em breve)</div>}
+        {page === "clients" && <Clients />}
         {page === "services" && <div>Serviços (em breve)</div>}
         {page === "appointments" && <div>Agenda (em breve)</div>}
       </div>
