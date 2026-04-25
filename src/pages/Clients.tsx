@@ -7,73 +7,60 @@ export default function Clients() {
     const [clients, setClients] = useState<any[]>([]);
     const [name, setName] = useState("");
     const [phone, setPhone] = useState("");
-    const [loading, setLoading] = useState(false);
+    const [editingId, setEditingId] = useState<string | null>(null);
 
     const token = localStorage.getItem("token");
 
-    // =========================
-    // LOAD CLIENTS
-    // =========================
     async function loadClients() {
-        try {
-            const res = await axios.get(API + "/clients", {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-
-            setClients(res.data);
-        } catch (err) {
-            console.error(err);
-        }
+        const res = await axios.get(API + "/clients", {
+            headers: { Authorization: `Bearer ${token}` },
+        });
+        setClients(res.data);
     }
 
-    // =========================
-    // CREATE CLIENT
-    // =========================
-    async function createClient() {
+    async function saveClient() {
         if (!name) return alert("Nome obrigatório");
 
-        setLoading(true);
-
-        try {
+        if (editingId) {
+            // UPDATE
+            await axios.patch(
+                API + `/clients/${editingId}`,
+                { name, phone },
+                {
+                    headers: { Authorization: `Bearer ${token}` },
+                }
+            );
+        } else {
+            // CREATE
             await axios.post(
                 API + "/clients",
                 { name, phone },
                 {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
+                    headers: { Authorization: `Bearer ${token}` },
                 }
             );
-
-            setName("");
-            setPhone("");
-            loadClients();
-        } catch (err) {
-            console.error(err);
-        } finally {
-            setLoading(false);
         }
+
+        setName("");
+        setPhone("");
+        setEditingId(null);
+        loadClients();
     }
 
-    // =========================
-    // DELETE CLIENT
-    // =========================
+    function editClient(client: any) {
+        setName(client.name);
+        setPhone(client.phone);
+        setEditingId(client.id);
+    }
+
     async function deleteClient(id: string) {
         if (!confirm("Excluir cliente?")) return;
 
-        try {
-            await axios.delete(API + `/clients/${id}`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
+        await axios.delete(API + `/clients/${id}`, {
+            headers: { Authorization: `Bearer ${token}` },
+        });
 
-            loadClients();
-        } catch (err) {
-            console.error(err);
-        }
+        loadClients();
     }
 
     useEffect(() => {
@@ -82,7 +69,7 @@ export default function Clients() {
 
     return (
         <div>
-            <h2>👥 Clientes</h2>
+            <h2 style={styles.title}>👥 Clientes</h2>
 
             {/* FORM */}
             <div style={styles.form}>
@@ -90,16 +77,18 @@ export default function Clients() {
                     placeholder="Nome"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
+                    style={styles.input}
                 />
 
                 <input
                     placeholder="Telefone"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
+                    style={styles.input}
                 />
 
-                <button onClick={createClient}>
-                    {loading ? "Salvando..." : "Adicionar"}
+                <button onClick={saveClient} style={styles.primaryButton}>
+                    {editingId ? "Atualizar" : "Adicionar"}
                 </button>
             </div>
 
@@ -113,7 +102,21 @@ export default function Clients() {
                             <small>{c.phone}</small>
                         </div>
 
-                        <button onClick={() => deleteClient(c.id)}>Excluir</button>
+                        <div style={{ display: "flex", gap: "10px" }}>
+                            <button
+                                style={styles.editButton}
+                                onClick={() => editClient(c)}
+                            >
+                                Editar
+                            </button>
+
+                            <button
+                                style={styles.deleteButton}
+                                onClick={() => deleteClient(c.id)}
+                            >
+                                Excluir
+                            </button>
+                        </div>
                     </div>
                 ))}
             </div>
@@ -122,17 +125,59 @@ export default function Clients() {
 }
 
 const styles = {
+    title: {
+        marginBottom: "10px",
+    },
+
     form: {
         display: "flex",
         gap: "10px",
-        marginTop: "10px",
+        background: "#fff",
+        padding: "15px",
+        borderRadius: "10px",
     },
+
+    input: {
+        padding: "10px",
+        border: "1px solid #ddd",
+        borderRadius: "6px",
+    },
+
+    primaryButton: {
+        background: "#ff4da6",
+        color: "#fff",
+        border: "none",
+        padding: "10px 15px",
+        borderRadius: "6px",
+        cursor: "pointer",
+        fontWeight: "bold",
+    },
+
     card: {
         display: "flex",
         justifyContent: "space-between",
-        padding: "10px",
+        padding: "15px",
         background: "#fff",
-        borderRadius: "8px",
+        borderRadius: "10px",
         marginBottom: "10px",
+        alignItems: "center",
+    },
+
+    editButton: {
+        background: "#ffe0ef",
+        color: "#ff4da6",
+        border: "none",
+        padding: "6px 10px",
+        borderRadius: "6px",
+        cursor: "pointer",
+    },
+
+    deleteButton: {
+        background: "#ffd6d6",
+        color: "#ff4d4d",
+        border: "none",
+        padding: "6px 10px",
+        borderRadius: "6px",
+        cursor: "pointer",
     },
 };
