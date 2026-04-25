@@ -1,3 +1,13 @@
+import { useState } from "react";
+import Login from "./pages/Login";
+import Layout from "./components/Layout";
+
 export default function App() {
-  return <div>Frontend Cilios rodando 🚀</div>;
+  const [token, setToken] = useState(localStorage.getItem("token"));
+
+  if (!token) {
+    return <Login onLogin={setToken} />;
+  }
+
+  return <Layout />;
 }
