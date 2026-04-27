@@ -1,5 +1,6 @@
 import { useState } from "react";
 import Clients from "../pages/Clients";
+import Services from "../pages/Services";
 
 // 👉 componente separado (profissional)
 function LogoutButton() {
@@ -59,7 +60,7 @@ export default function Layout() {
       {/* CONTEÚDO */}
       <div style={styles.content}>
         {page === "clients" && <Clients />}
-        {page === "services" && <div>Serviços (em breve)</div>}
+        {page === "services" && <Services />}
         {page === "appointments" && <div>Agenda (em breve)</div>}
       </div>
     </div>
