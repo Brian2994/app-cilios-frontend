@@ -2,24 +2,52 @@ import { useState } from "react";
 import Clients from "../pages/Clients";
 import Services from "../pages/Services";
 import Appointments from "../pages/Appointments";
+import Calendar from "../pages/Calendar";
 
-// 👉 componente separado (profissional)
+/* =========================
+   🔥 BOTÃO REUTILIZÁVEL
+========================= */
+function SidebarButton({
+  label,
+  value,
+  current,
+  onClick,
+}: {
+  label: string;
+  value: string;
+  current: string;
+  onClick: (v: string) => void;
+}) {
+  const [hover, setHover] = useState(false);
+  const isActive = current === value;
+
+  return (
+    <button
+      style={{
+        ...styles.button,
+        ...(isActive && styles.activeButton),
+        opacity: hover && !isActive ? 0.8 : 1,
+      }}
+      onClick={() => onClick(value)}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+    >
+      {label}
+    </button>
+  );
+}
+
+/* =========================
+   🔐 LOGOUT
+========================= */
 function LogoutButton() {
   const [hover, setHover] = useState(false);
 
   return (
     <button
       style={{
-        marginTop: "auto",
-        background: "#fff",
-        color: "#ff4da6",
-        border: "none",
-        padding: "10px",
-        borderRadius: "6px",
-        cursor: "pointer",
-        fontWeight: "bold",
+        ...styles.logout,
         opacity: hover ? 0.8 : 1,
-        transition: "0.2s",
       }}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
@@ -33,62 +61,117 @@ function LogoutButton() {
   );
 }
 
+/* =========================
+   🧠 LAYOUT PRINCIPAL
+========================= */
 export default function Layout() {
   const [page, setPage] = useState("clients");
 
+  function renderPage() {
+    if (page === "clients") return <Clients />;
+    if (page === "services") return <Services />;
+    if (page === "appointments") return <Appointments />;
+    if (page === "calendar") return <Calendar />;
+    return null;
+  }
+
   return (
-    <div style={{ display: "flex", height: "100vh" }}>
-      {/* MENU */}
+    <div style={styles.container}>
+      {/* SIDEBAR */}
       <div style={styles.sidebar}>
-        <h2>💇 Cílios</h2>
+        <h2 style={styles.logo}>💇 Cílios</h2>
 
-        <button style={styles.button} onClick={() => setPage("clients")}>
-          Clientes
-        </button>
+        <SidebarButton
+          label="Clientes"
+          value="clients"
+          current={page}
+          onClick={setPage}
+        />
 
-        <button style={styles.button} onClick={() => setPage("services")}>
-          Serviços
-        </button>
+        <SidebarButton
+          label="Serviços"
+          value="services"
+          current={page}
+          onClick={setPage}
+        />
 
-        <button style={styles.button} onClick={() => setPage("appointments")}>
-          Agenda
-        </button>
+        <SidebarButton
+          label="Agenda"
+          value="appointments"
+          current={page}
+          onClick={setPage}
+        />
 
-        {/* botão separado */}
+        <SidebarButton
+          label="Calendário"
+          value="calendar"
+          current={page}
+          onClick={setPage}
+        />
+
         <LogoutButton />
       </div>
 
       {/* CONTEÚDO */}
-      <div style={styles.content}>
-        {page === "clients" && <Clients />}
-        {page === "services" && <Services />}
-        {page === "appointments" && <Appointments />}
-      </div>
+      <div style={styles.content}>{renderPage()}</div>
     </div>
   );
 }
 
+/* =========================
+   🎨 STYLES
+========================= */
 const styles = {
+  container: {
+    display: "flex",
+    height: "100vh",
+    fontFamily: "Arial, sans-serif",
+  },
+
   sidebar: {
     width: "220px",
-    background: "linear-gradient(180deg, #ff4da6, #ff80bf)", // 💖 pink principal
+    background: "linear-gradient(180deg, #ff4da6, #ff80bf)",
     color: "#fff",
     padding: "20px",
     display: "flex",
     flexDirection: "column" as const,
     gap: "10px",
   },
+
+  logo: {
+    marginBottom: "10px",
+  },
+
   content: {
     flex: 1,
     padding: "20px",
-    background: "#fff0f6", // 💗 fundo leve
+    background: "#fff0f6",
   },
+
   button: {
     background: "#fff",
     color: "#ff4da6",
     border: "none",
     padding: "10px",
-    borderRadius: "6px",
+    borderRadius: "8px",
+    cursor: "pointer",
+    fontWeight: "bold",
+    textAlign: "left" as const,
+    transition: "0.2s",
+  },
+
+  activeButton: {
+    background: "#ff1a8c",
+    color: "#fff",
+  },
+
+  logout: {
+    marginTop: "auto",
+    background: "#fff",
+    color: "#ff4da6",
+    border: "none",
+    padding: "10px",
+    borderRadius: "8px",
     cursor: "pointer",
     fontWeight: "bold",
   },
