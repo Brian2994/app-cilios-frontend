@@ -3,6 +3,7 @@ import Clients from "../pages/Clients";
 import Services from "../pages/Services";
 import Appointments from "../pages/Appointments";
 import Calendar from "../pages/Calendar";
+import Dashboard from "../pages/Dashboard";
 
 /* =========================
    🔥 BOTÃO REUTILIZÁVEL
@@ -65,9 +66,10 @@ function LogoutButton() {
    🧠 LAYOUT PRINCIPAL
 ========================= */
 export default function Layout() {
-  const [page, setPage] = useState("clients");
+  const [page, setPage] = useState("dashboard");
 
   function renderPage() {
+    if (page === "dashboard") return <Dashboard />;
     if (page === "clients") return <Clients />;
     if (page === "services") return <Services />;
     if (page === "appointments") return <Appointments />;
@@ -82,28 +84,35 @@ export default function Layout() {
         <h2 style={styles.logo}>💇 Cílios</h2>
 
         <SidebarButton
-          label="Clientes"
+          label="📊 Dashboard"
+          value="dashboard"
+          current={page}
+          onClick={setPage}
+        />
+
+        <SidebarButton
+          label="👤 Clientes"
           value="clients"
           current={page}
           onClick={setPage}
         />
 
         <SidebarButton
-          label="Serviços"
+          label="💇 Serviços"
           value="services"
           current={page}
           onClick={setPage}
         />
 
         <SidebarButton
-          label="Agenda"
+          label="📅 Agenda"
           value="appointments"
           current={page}
           onClick={setPage}
         />
 
         <SidebarButton
-          label="Calendário"
+          label="🗓 Calendário"
           value="calendar"
           current={page}
           onClick={setPage}
