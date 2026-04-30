@@ -1,5 +1,15 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import {
+    LineChart,
+    Line,
+    XAxis,
+    YAxis,
+    Tooltip,
+    ResponsiveContainer,
+    BarChart,
+    Bar,
+} from "recharts";
 
 const API = "http://localhost:3000";
 
@@ -31,6 +41,42 @@ export default function Dashboard() {
                 <Card title="Mês" value={`R$ ${data.monthRevenue.toFixed(2)}`} />
                 <Card title="Clientes" value={data.totalClients} />
                 <Card title="Agendamentos" value={data.totalAppointments} />
+            </div>
+
+            {/* 📊 GRÁFICOS */}
+            <div style={styles.charts}>
+                {/* 📈 Faturamento */}
+                <div style={styles.chartCard}>
+                    <h3>Faturamento (7 dias)</h3>
+
+                    <ResponsiveContainer width="100%" height={250}>
+                        <LineChart data={data.revenueByDay}>
+                            <XAxis
+                                dataKey="date"
+                                tickFormatter={(d) =>
+                                    new Date(d).toLocaleDateString("pt-BR", { weekday: "short" })
+                                }
+                            />
+                            <YAxis />
+                            <Tooltip />
+                            <Line type="monotone" dataKey="total" />
+                        </LineChart>
+                    </ResponsiveContainer>
+                </div>
+
+                {/* 🥇 Serviços */}
+                <div style={styles.chartCard}>
+                    <h3>Serviços mais usados</h3>
+
+                    <ResponsiveContainer width="100%" height={250}>
+                        <BarChart data={data.topServices}>
+                            <XAxis dataKey="name" />
+                            <YAxis />
+                            <Tooltip />
+                            <Bar dataKey="total" />
+                        </BarChart>
+                    </ResponsiveContainer>
+                </div>
             </div>
 
             {/* LISTA HOJE */}
@@ -101,5 +147,18 @@ const styles = {
         justifyContent: "space-between",
         padding: "10px 0",
         borderBottom: "1px solid #eee",
+    },
+
+    charts: {
+        display: "grid",
+        gridTemplateColumns: "1fr 1fr",
+        gap: "20px",
+        marginTop: "20px",
+    },
+
+    chartCard: {
+        background: "#fff",
+        padding: "20px",
+        borderRadius: "12px",
     },
 };
