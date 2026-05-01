@@ -5,6 +5,7 @@ import FullCalendar from "@fullcalendar/react";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import dayGridPlugin from "@fullcalendar/daygrid";
+import ptBrLocale from "@fullcalendar/core/locales/pt-br";
 
 const API = "http://localhost:3000";
 
@@ -130,6 +131,7 @@ export default function Calendar() {
                 <FullCalendar
                     plugins={[timeGridPlugin, interactionPlugin, dayGridPlugin]}
                     initialView="timeGridWeek"
+                    locale={ptBrLocale}
                     events={events}
                     height="75vh"
                     allDaySlot={false}
