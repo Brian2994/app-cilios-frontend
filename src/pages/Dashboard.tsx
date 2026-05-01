@@ -53,13 +53,28 @@ export default function Dashboard() {
                         <LineChart data={data.revenueByDay}>
                             <XAxis
                                 dataKey="date"
+                                tick={{ fontSize: 12, fill: "#888" }}
                                 tickFormatter={(d) =>
                                     new Date(d).toLocaleDateString("pt-BR", { weekday: "short" })
                                 }
                             />
-                            <YAxis />
-                            <Tooltip />
-                            <Line type="monotone" dataKey="total" />
+
+                            <YAxis tick={{ fontSize: 10, fill: "#888" }} />
+                            <Tooltip
+                                contentStyle={{
+                                    background: "#fff",
+                                    border: "1px solid #ffe0ef",
+                                    borderRadius: "8px",
+                                }}
+                            />
+                            <Line
+                                type="monotone"
+                                dataKey="total"
+                                stroke="#ff4da6"
+                                strokeWidth={3}
+                                dot={{ r: 4 }}
+                                activeDot={{ r: 6 }}
+                            />
                         </LineChart>
                     </ResponsiveContainer>
                 </div>
@@ -70,10 +85,27 @@ export default function Dashboard() {
 
                     <ResponsiveContainer width="100%" height={250}>
                         <BarChart data={data.topServices}>
-                            <XAxis dataKey="name" />
-                            <YAxis />
-                            <Tooltip />
-                            <Bar dataKey="total" />
+                            <XAxis
+                                dataKey="name"
+                                tick={{ fontSize: 12, fill: "#888" }}
+                                tickFormatter={(name) =>
+                                    name.length > 18 ? name.slice(0, 18) + "..." : name
+                                }
+                            />
+
+                            <YAxis tick={{ fontSize: 12, fill: "#888" }} />
+                            <Tooltip
+                                contentStyle={{
+                                    background: "#fff",
+                                    border: "1px solid #ffe0ef",
+                                    borderRadius: "8px",
+                                }}
+                            />
+                            <Bar
+                                dataKey="total"
+                                fill="#ff80bf"
+                                radius={[6, 6, 0, 0]}
+                            />
                         </BarChart>
                     </ResponsiveContainer>
                 </div>
