@@ -55,12 +55,25 @@ export default function Dashboard() {
                                 dataKey="date"
                                 tick={{ fontSize: 12, fill: "#888" }}
                                 tickFormatter={(d) =>
-                                    new Date(d).toLocaleDateString("pt-BR", { weekday: "short" })
+                                    new Date(d + "T12:00:00").toLocaleDateString("pt-BR", { weekday: "short" })
                                 }
                             />
 
                             <YAxis tick={{ fontSize: 10, fill: "#888" }} />
                             <Tooltip
+                                labelFormatter={(value) => {
+                                    return new Date(value + "T12:00:00").toLocaleDateString("pt-BR");
+                                }}
+                                formatter={(value: any) => {
+                                    const amount = Number(value);
+                                    return [
+                                        amount.toLocaleString("pt-BR", {
+                                            style: "currency",
+                                            currency: "BRL",
+                                        }),
+                                        "Total",
+                                    ];
+                                }}
                                 contentStyle={{
                                     background: "#fff",
                                     border: "1px solid #ffe0ef",
