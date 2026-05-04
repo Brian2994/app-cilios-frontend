@@ -41,7 +41,7 @@ function SidebarButton({
 /* =========================
    🔐 LOGOUT
 ========================= */
-function LogoutButton() {
+function LogoutButton({ onLogout }: any) {
   const [hover, setHover] = useState(false);
 
   return (
@@ -54,7 +54,7 @@ function LogoutButton() {
       onMouseLeave={() => setHover(false)}
       onClick={() => {
         localStorage.removeItem("token");
-        window.location.reload();
+        onLogout();
       }}
     >
       Sair
@@ -65,8 +65,19 @@ function LogoutButton() {
 /* =========================
    🧠 LAYOUT PRINCIPAL
 ========================= */
-export default function Layout() {
+export default function Layout({ onLogout }: any) {
   const [page, setPage] = useState("dashboard");
+  const token = localStorage.getItem("token");
+
+  let user: any = null;
+
+  if (token) {
+    try {
+      user = JSON.parse(atob(token.split(".")[1]));
+    } catch (e) {
+      console.error("Token inválido");
+    }
+  }
 
   function renderPage() {
     if (page === "dashboard") return <Dashboard />;
@@ -81,7 +92,11 @@ export default function Layout() {
     <div style={styles.container}>
       {/* SIDEBAR */}
       <div style={styles.sidebar}>
-        <h2 style={styles.logo}>💇 Cílios</h2>
+        <div style={styles.userBox}>
+          <h2 style={styles.logo}>💇 Cílios</h2>
+          <p style={styles.userName}>{user?.name}</p>
+          <small style={styles.userEmail}>{user?.email}</small>
+        </div>
 
         <SidebarButton
           label="📊 Dashboard"
@@ -118,7 +133,7 @@ export default function Layout() {
           onClick={setPage}
         />
 
-        <LogoutButton />
+        <LogoutButton onLogout={onLogout} />
       </div>
 
       {/* CONTEÚDO */}
@@ -183,5 +198,19 @@ const styles = {
     borderRadius: "8px",
     cursor: "pointer",
     fontWeight: "bold",
+  },
+
+  userBox: {
+    marginBottom: "15px",
+  },
+
+  userName: {
+    fontWeight: "bold",
+    margin: 0,
+  },
+
+  userEmail: {
+    fontSize: "12px",
+    opacity: 0.8,
   },
 };
