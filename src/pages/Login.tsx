@@ -1,7 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 
-export default function Login({ onLogin }: any) {
+export default function Login({ onLogin, onGoRegister }: any) {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
@@ -71,7 +71,7 @@ export default function Login({ onLogin }: any) {
 
                 <p style={styles.register}>
                     Não tem conta?{" "}
-                    <span onClick={() => window.location.href = "/register"}>
+                    <span style={styles.registerLink} onClick={onGoRegister}>
                         Criar conta
                     </span>
                 </p>
@@ -121,6 +121,10 @@ const styles = {
         textAlign: "center" as const,
         fontSize: "14px",
         color: "#666",
+    },
+    registerLink: {
+        color: "#ff4da6",
+        fontWeight: "bold",
         cursor: "pointer",
     },
 };
