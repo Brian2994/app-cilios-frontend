@@ -68,6 +68,13 @@ export default function Login({ onLogin }: any) {
                 >
                     {loading ? "Entrando..." : "Entrar"}
                 </button>
+
+                <p style={styles.register}>
+                    Não tem conta?{" "}
+                    <span onClick={() => window.location.href = "/register"}>
+                        Criar conta
+                    </span>
+                </p>
             </form>
         </div>
     );
@@ -109,5 +116,11 @@ const styles = {
         fontWeight: "bold" as const,
         fontSize: "16px",
         transition: "0.3s",
+    },
+    register: {
+        textAlign: "center" as const,
+        fontSize: "14px",
+        color: "#666",
+        cursor: "pointer",
     },
 };
