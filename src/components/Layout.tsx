@@ -13,11 +13,13 @@ function SidebarButton({
   value,
   current,
   onClick,
+  closeMenu,
 }: {
   label: string;
   value: string;
   current: string;
   onClick: (v: string) => void;
+  closeMenu?: () => void;
 }) {
   const [hover, setHover] = useState(false);
   const isActive = current === value;
@@ -29,7 +31,13 @@ function SidebarButton({
         ...(isActive && styles.activeButton),
         opacity: hover && !isActive ? 0.8 : 1,
       }}
-      onClick={() => onClick(value)}
+      onClick={() => {
+        onClick(value);
+
+        if (closeMenu) {
+          closeMenu();
+        }
+      }}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
     >
@@ -67,6 +75,10 @@ function LogoutButton({ onLogout }: any) {
 ========================= */
 export default function Layout({ onLogout }: any) {
   const [page, setPage] = useState("dashboard");
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  const mobile = window.innerWidth < 768;
+
   const token = localStorage.getItem("token");
 
   let user: any = null;
@@ -90,10 +102,37 @@ export default function Layout({ onLogout }: any) {
 
   return (
     <div style={styles.container}>
+      {/* BOTÃO MENU MOBILE */}
+      {mobile && !menuOpen && (
+        <button
+          style={styles.menuButton}
+          onClick={() => setMenuOpen(true)}
+        >
+          ☰
+        </button>
+      )}
+
+      {mobile && menuOpen && (
+        <div
+          style={styles.overlay}
+          onClick={() => setMenuOpen(false)}
+        />
+      )}
+
       {/* SIDEBAR */}
-      <div style={styles.sidebar}>
+      <div
+        style={{
+          ...styles.sidebar,
+          display: mobile
+            ? menuOpen
+              ? "flex"
+              : "none"
+            : "flex",
+        }}
+      >
         <div style={styles.userBox}>
           <h2 style={styles.logo}>💇 Cílios</h2>
+
           <p style={styles.userName}>{user?.name}</p>
           <small style={styles.userEmail}>{user?.email}</small>
         </div>
@@ -103,6 +142,7 @@ export default function Layout({ onLogout }: any) {
           value="dashboard"
           current={page}
           onClick={setPage}
+          closeMenu={() => setMenuOpen(false)}
         />
 
         <SidebarButton
@@ -110,6 +150,7 @@ export default function Layout({ onLogout }: any) {
           value="clients"
           current={page}
           onClick={setPage}
+          closeMenu={() => setMenuOpen(false)}
         />
 
         <SidebarButton
@@ -117,6 +158,7 @@ export default function Layout({ onLogout }: any) {
           value="services"
           current={page}
           onClick={setPage}
+          closeMenu={() => setMenuOpen(false)}
         />
 
         <SidebarButton
@@ -124,6 +166,7 @@ export default function Layout({ onLogout }: any) {
           value="appointments"
           current={page}
           onClick={setPage}
+          closeMenu={() => setMenuOpen(false)}
         />
 
         <SidebarButton
@@ -131,6 +174,7 @@ export default function Layout({ onLogout }: any) {
           value="calendar"
           current={page}
           onClick={setPage}
+          closeMenu={() => setMenuOpen(false)}
         />
 
         <LogoutButton onLogout={onLogout} />
@@ -148,7 +192,7 @@ export default function Layout({ onLogout }: any) {
 const styles = {
   container: {
     display: "flex",
-    height: "100vh",
+    minHeight: "100vh",
     fontFamily: "Arial, sans-serif",
   },
 
@@ -160,6 +204,14 @@ const styles = {
     display: "flex",
     flexDirection: "column" as const,
     gap: "10px",
+
+    position: "fixed" as const,
+    top: 0,
+    left: 0,
+    height: "100vh",
+    zIndex: 999,
+
+    boxShadow: "0 0 15px rgba(0,0,0,0.2)",
   },
 
   logo: {
@@ -168,7 +220,15 @@ const styles = {
 
   content: {
     flex: 1,
-    padding: "20px",
+    width: "100%",
+    padding: window.innerWidth < 768
+      ? "70px 15px 15px"
+      : "20px",
+
+    marginLeft: window.innerWidth < 768
+      ? "0"
+      : "260px",
+
     background: "#fff0f6",
   },
 
@@ -212,5 +272,29 @@ const styles = {
   userEmail: {
     fontSize: "12px",
     opacity: 0.8,
+  },
+
+  menuButton: {
+    position: "fixed" as const,
+    top: "15px",
+    left: "15px",
+    zIndex: 1000,
+    background: "#ff4da6",
+    color: "#fff",
+    border: "none",
+    borderRadius: "8px",
+    padding: "10px 14px",
+    fontSize: "20px",
+    cursor: "pointer",
+  },
+
+  overlay: {
+    position: "fixed" as const,
+    top: 0,
+    left: 0,
+    width: "100%",
+    height: "100%",
+    background: "rgba(0,0,0,0.3)",
+    zIndex: 998,
   },
 };
