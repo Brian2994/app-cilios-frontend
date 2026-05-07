@@ -17,6 +17,9 @@ export default function Dashboard() {
     const [data, setData] = useState<any>(null);
     const token = localStorage.getItem("token");
 
+    const mobile = window.innerWidth < 768;
+    const s = styles(mobile);
+
     async function load() {
         const res = await axios.get(API + "/dashboard", {
             headers: { Authorization: `Bearer ${token}` },
@@ -33,20 +36,42 @@ export default function Dashboard() {
 
     return (
         <div>
-            <h2 style={styles.title}>📊 Dashboard</h2>
+            <h2 style={s.title}>📊 Dashboard</h2>
 
             {/* CARDS */}
-            <div style={styles.grid}>
-                <Card title="Hoje" value={`R$ ${data.todayRevenue.toFixed(2)}`} />
-                <Card title="Mês" value={`R$ ${data.monthRevenue.toFixed(2)}`} />
-                <Card title="Clientes" value={data.totalClients} />
-                <Card title="Agendamentos" value={data.totalAppointments} />
+            <div style={s.grid}>
+                <Card
+                    title="Hoje"
+                    value={`R$ ${data.todayRevenue.toFixed(2)}`}
+                    mobile={mobile}
+                    style={s.stat}
+                />
+                <Card
+                    title="Mês"
+                    value={`R$ ${data.monthRevenue.toFixed(2)}`}
+                    mobile={mobile}
+                    style={s.stat}
+                />
+
+                <Card
+                    title="Clientes"
+                    value={data.totalClients}
+                    mobile={mobile}
+                    style={s.stat}
+                />
+
+                <Card
+                    title="Agendamentos"
+                    value={data.totalAppointments}
+                    mobile={mobile}
+                    style={s.stat}
+                />
             </div>
 
             {/* 📊 GRÁFICOS */}
-            <div style={styles.charts}>
+            <div style={s.charts}>
                 {/* 📈 Faturamento */}
-                <div style={styles.chartCard}>
+                <div style={s.chartCard}>
                     <h3>Faturamento (7 dias)</h3>
 
                     <ResponsiveContainer width="100%" height={250}>
@@ -93,7 +118,7 @@ export default function Dashboard() {
                 </div>
 
                 {/* 🥇 Serviços */}
-                <div style={styles.chartCard}>
+                <div style={s.chartCard}>
                     <h3>Serviços mais usados</h3>
 
                     <ResponsiveContainer width="100%" height={250}>
@@ -125,7 +150,7 @@ export default function Dashboard() {
             </div>
 
             {/* LISTA HOJE */}
-            <div style={styles.card}>
+            <div style={s.card}>
                 <h3>Hoje</h3>
 
                 {data.todayAppointments.length === 0 && (
@@ -133,7 +158,7 @@ export default function Dashboard() {
                 )}
 
                 {data.todayAppointments.map((a: any) => (
-                    <div key={a.id} style={styles.item}>
+                    <div key={a.id} style={s.item}>
                         <div>
                             <strong>{a.client.name}</strong>
                             <br />
@@ -153,23 +178,25 @@ export default function Dashboard() {
     );
 }
 
-function Card({ title, value }: any) {
+function Card({ title, value, mobile, style }: any) {
     return (
-        <div style={styles.stat}>
+        <div style={style}>
             <small>{title}</small>
-            <h2>{value}</h2>
+            <h2 style={{ fontSize: mobile ? "20px" : "28px" }}>
+                {value}
+            </h2>
         </div>
     );
 }
 
-const styles = {
+const styles = (mobile: boolean) => ({
     title: {
         marginBottom: "15px",
     },
 
     grid: {
         display: "grid",
-        gridTemplateColumns: "repeat(4, 1fr)",
+        gridTemplateColumns: mobile ? "1fr 1fr" : "repeat(4, 1fr)",
         gap: "15px",
     },
 
@@ -183,7 +210,7 @@ const styles = {
     card: {
         marginTop: "20px",
         background: "#fff",
-        padding: "20px",
+        padding: mobile ? "15px" : "20px",
         borderRadius: "12px",
     },
 
@@ -196,14 +223,14 @@ const styles = {
 
     charts: {
         display: "grid",
-        gridTemplateColumns: "1fr 1fr",
+        gridTemplateColumns: mobile ? "1fr" : "1fr 1fr",
         gap: "20px",
         marginTop: "20px",
     },
 
     chartCard: {
         background: "#fff",
-        padding: "20px",
+        padding: mobile ? "15px" : "20px",
         borderRadius: "12px",
     },
-};
+});
