@@ -14,21 +14,24 @@ function SidebarButton({
   current,
   onClick,
   closeMenu,
+  styles,
 }: {
   label: string;
   value: string;
   current: string;
   onClick: (v: string) => void;
   closeMenu?: () => void;
+  styles: any;
 }) {
   const [hover, setHover] = useState(false);
+
   const isActive = current === value;
 
   return (
     <button
       style={{
         ...styles.button,
-        ...(isActive && styles.activeButton),
+        ...(isActive ? styles.activeButton : {}),
         opacity: hover && !isActive ? 0.8 : 1,
       }}
       onClick={() => {
@@ -49,7 +52,13 @@ function SidebarButton({
 /* =========================
    🔐 LOGOUT
 ========================= */
-function LogoutButton({ onLogout }: any) {
+function LogoutButton({
+  onLogout,
+  styles,
+}: {
+  onLogout: () => void;
+  styles: any;
+}) {
   const [hover, setHover] = useState(false);
 
   return (
@@ -73,11 +82,16 @@ function LogoutButton({ onLogout }: any) {
 /* =========================
    🧠 LAYOUT PRINCIPAL
 ========================= */
-export default function Layout({ onLogout }: any) {
+export default function Layout({
+  onLogout,
+}: {
+  onLogout: () => void;
+}) {
   const [page, setPage] = useState("dashboard");
   const [menuOpen, setMenuOpen] = useState(false);
 
   const mobile = window.innerWidth < 768;
+  const s = styles(mobile);
 
   const token = localStorage.getItem("token");
 
@@ -97,24 +111,26 @@ export default function Layout({ onLogout }: any) {
     if (page === "services") return <Services />;
     if (page === "appointments") return <Appointments />;
     if (page === "calendar") return <Calendar />;
+
     return null;
   }
 
   return (
-    <div style={styles.container}>
-      {/* BOTÃO MENU MOBILE */}
+    <div style={s.container}>
+      {/* MENU MOBILE */}
       {mobile && !menuOpen && (
         <button
-          style={styles.menuButton}
+          style={s.menuButton}
           onClick={() => setMenuOpen(true)}
         >
           ☰
         </button>
       )}
 
+      {/* OVERLAY */}
       {mobile && menuOpen && (
         <div
-          style={styles.overlay}
+          style={s.overlay}
           onClick={() => setMenuOpen(false)}
         />
       )}
@@ -122,7 +138,7 @@ export default function Layout({ onLogout }: any) {
       {/* SIDEBAR */}
       <div
         style={{
-          ...styles.sidebar,
+          ...s.sidebar,
           display: mobile
             ? menuOpen
               ? "flex"
@@ -130,11 +146,14 @@ export default function Layout({ onLogout }: any) {
             : "flex",
         }}
       >
-        <div style={styles.userBox}>
-          <h2 style={styles.logo}>💇 Cílios</h2>
+        <div style={s.userBox}>
+          <h2 style={s.logo}>💇 Cílios</h2>
 
-          <p style={styles.userName}>{user?.name}</p>
-          <small style={styles.userEmail}>{user?.email}</small>
+          <p style={s.userName}>{user?.name}</p>
+
+          <small style={s.userEmail}>
+            {user?.email}
+          </small>
         </div>
 
         <SidebarButton
@@ -143,6 +162,7 @@ export default function Layout({ onLogout }: any) {
           current={page}
           onClick={setPage}
           closeMenu={() => setMenuOpen(false)}
+          styles={s}
         />
 
         <SidebarButton
@@ -151,6 +171,7 @@ export default function Layout({ onLogout }: any) {
           current={page}
           onClick={setPage}
           closeMenu={() => setMenuOpen(false)}
+          styles={s}
         />
 
         <SidebarButton
@@ -159,6 +180,7 @@ export default function Layout({ onLogout }: any) {
           current={page}
           onClick={setPage}
           closeMenu={() => setMenuOpen(false)}
+          styles={s}
         />
 
         <SidebarButton
@@ -167,6 +189,7 @@ export default function Layout({ onLogout }: any) {
           current={page}
           onClick={setPage}
           closeMenu={() => setMenuOpen(false)}
+          styles={s}
         />
 
         <SidebarButton
@@ -175,13 +198,19 @@ export default function Layout({ onLogout }: any) {
           current={page}
           onClick={setPage}
           closeMenu={() => setMenuOpen(false)}
+          styles={s}
         />
 
-        <LogoutButton onLogout={onLogout} />
+        <LogoutButton
+          onLogout={onLogout}
+          styles={s}
+        />
       </div>
 
       {/* CONTEÚDO */}
-      <div style={styles.content}>{renderPage()}</div>
+      <div style={s.content}>
+        {renderPage()}
+      </div>
     </div>
   );
 }
@@ -189,7 +218,7 @@ export default function Layout({ onLogout }: any) {
 /* =========================
    🎨 STYLES
 ========================= */
-const styles = {
+const styles = (mobile: boolean) => ({
   container: {
     display: "flex",
     minHeight: "100vh",
@@ -204,13 +233,13 @@ const styles = {
     display: "flex",
     flexDirection: "column" as const,
     gap: "10px",
-
     position: "fixed" as const,
     top: 0,
     left: 0,
     height: "100vh",
+    boxSizing: "border-box" as const,
+    overflowY: "auto" as const,
     zIndex: 999,
-
     boxShadow: "0 0 15px rgba(0,0,0,0.2)",
   },
 
@@ -221,25 +250,25 @@ const styles = {
   content: {
     flex: 1,
     width: "100%",
-    padding: window.innerWidth < 768
+    padding: mobile
       ? "70px 15px 15px"
       : "20px",
-
-    marginLeft: window.innerWidth < 768
+    marginLeft: mobile
       ? "0"
-      : "260px",
-
+      : "220px",
     background: "#fff0f6",
+    minHeight: "100vh",
+    boxSizing: "border-box" as const,
   },
 
   button: {
     background: "#fff",
     color: "#ff4da6",
     border: "none",
-    padding: "10px",
+    padding: "12px",
     borderRadius: "8px",
     cursor: "pointer",
-    fontWeight: "bold",
+    fontWeight: "bold" as const,
     textAlign: "left" as const,
     transition: "0.2s",
   },
@@ -254,10 +283,10 @@ const styles = {
     background: "#fff",
     color: "#ff4da6",
     border: "none",
-    padding: "10px",
+    padding: "12px",
     borderRadius: "8px",
     cursor: "pointer",
-    fontWeight: "bold",
+    fontWeight: "bold" as const,
   },
 
   userBox: {
@@ -265,7 +294,7 @@ const styles = {
   },
 
   userName: {
-    fontWeight: "bold",
+    fontWeight: "bold" as const,
     margin: 0,
   },
 
@@ -297,4 +326,4 @@ const styles = {
     background: "rgba(0,0,0,0.3)",
     zIndex: 998,
   },
-};
+});
