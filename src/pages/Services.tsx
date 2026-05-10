@@ -13,6 +13,9 @@ export default function Services() {
 
     const token = localStorage.getItem("token");
 
+    const mobile = window.innerWidth < 768;
+    const s = styles(mobile);
+
     async function loadServices() {
         try {
             const res = await axios.get(API + "/services", {
@@ -94,15 +97,15 @@ export default function Services() {
 
     return (
         <div>
-            <h2 style={styles.title}>💇 Serviços</h2>
+            <h2 style={s.title}>💇 Serviços</h2>
 
             {/* FORM */}
-            <div style={styles.form}>
+            <div style={s.form}>
                 <input
                     placeholder="Nome do serviço"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    style={styles.input}
+                    style={s.input}
                 />
 
                 <input
@@ -110,7 +113,7 @@ export default function Services() {
                     type="number"
                     value={price}
                     onChange={(e) => setPrice(e.target.value)}
-                    style={styles.input}
+                    style={s.input}
                 />
 
                 <input
@@ -118,12 +121,12 @@ export default function Services() {
                     type="number"
                     value={duration}
                     onChange={(e) => setDuration(e.target.value)}
-                    style={styles.input}
+                    style={s.input}
                 />
 
                 <button
                     onClick={saveService}
-                    style={styles.primaryButton}
+                    style={s.primaryButton}
                     disabled={loading}
                 >
                     {loading
@@ -134,7 +137,7 @@ export default function Services() {
                 </button>
 
                 {editingId && (
-                    <button onClick={resetForm} style={styles.cancelButton}>
+                    <button onClick={resetForm} style={s.cancelButton}>
                         Cancelar
                     </button>
                 )}
@@ -143,30 +146,34 @@ export default function Services() {
             {/* LISTA */}
             <div style={{ marginTop: 20 }}>
                 {services.length === 0 && (
-                    <p style={{ opacity: 0.6 }}>Nenhum serviço cadastrado</p>
+                    <p style={s.empty}>Nenhum serviço cadastrado</p>
                 )}
 
-                {services.map((s) => (
-                    <div key={s.id} style={styles.card}>
+                {services.map((service) => (
+                    <div key={service.id} style={s.card}>
                         <div>
-                            <strong style={{ fontSize: "16px" }}>{s.name}</strong>
+                            <strong style={{ fontSize: "16px" }}>
+                                {service.name}
+                            </strong>
+
                             <br />
+
                             <small>
-                                R$ {Number(s.price).toFixed(2)} • {s.duration}min
+                                R$ {Number(service.price).toFixed(2)} • {service.duration}min
                             </small>
                         </div>
 
-                        <div style={styles.actions}>
+                        <div style={s.actions}>
                             <button
-                                style={styles.editButton}
-                                onClick={() => editService(s)}
+                                style={s.editButton}
+                                onClick={() => editService(service)}
                             >
                                 Editar
                             </button>
 
                             <button
-                                style={styles.deleteButton}
-                                onClick={() => deleteService(s.id)}
+                                style={s.deleteButton}
+                                onClick={() => deleteService(service.id)}
                             >
                                 Excluir
                             </button>
@@ -178,75 +185,91 @@ export default function Services() {
     );
 }
 
-const styles = {
+const styles = (mobile: boolean) => ({
     title: {
-        marginBottom: "10px",
+        marginBottom: "15px",
     },
 
     form: {
         display: "flex",
-        gap: "10px",
+        flexDirection: mobile ? "column" as const : "row" as const,
+        gap: "12px",
         background: "#fff",
-        padding: "15px",
-        borderRadius: "10px",
-        flexWrap: "wrap" as const,
+        padding: mobile ? "15px" : "20px",
+        borderRadius: "12px",
+        boxShadow: "0 4px 10px rgba(0,0,0,0.05)",
     },
 
     input: {
-        padding: "10px",
+        padding: "12px",
         border: "1px solid #ddd",
-        borderRadius: "6px",
-        minWidth: "150px",
+        borderRadius: "8px",
+        width: mobile ? "100%" : "auto",
+        boxSizing: "border-box" as const,
+        fontSize: "14px",
     },
 
     primaryButton: {
         background: "#ff4da6",
         color: "#fff",
         border: "none",
-        padding: "10px 15px",
-        borderRadius: "6px",
+        padding: "12px",
+        borderRadius: "8px",
         cursor: "pointer",
-        fontWeight: "bold",
+        fontWeight: "bold" as const,
+        width: mobile ? "100%" : "auto",
     },
 
     cancelButton: {
         background: "#eee",
         border: "none",
-        padding: "10px 15px",
-        borderRadius: "6px",
+        padding: "12px",
+        borderRadius: "8px",
         cursor: "pointer",
+        width: mobile ? "100%" : "auto",
     },
 
     card: {
         display: "flex",
+        flexDirection: mobile ? "column" as const : "row" as const,
         justifyContent: "space-between",
-        padding: "15px",
+        alignItems: mobile ? "flex-start" as const : "center" as const,
+        gap: "15px",
+        padding: mobile ? "15px" : "18px",
         background: "#fff",
-        borderRadius: "10px",
-        marginBottom: "10px",
-        alignItems: "center",
+        borderRadius: "12px",
+        marginBottom: "12px",
+        boxShadow: "0 4px 10px rgba(0,0,0,0.04)",
     },
 
     actions: {
         display: "flex",
         gap: "10px",
+        width: mobile ? "100%" : "auto",
     },
 
     editButton: {
+        flex: mobile ? 1 : undefined,
         background: "#ffe0ef",
         color: "#ff4da6",
         border: "none",
-        padding: "6px 10px",
-        borderRadius: "6px",
+        padding: "10px",
+        borderRadius: "8px",
         cursor: "pointer",
     },
 
     deleteButton: {
+        flex: mobile ? 1 : undefined,
         background: "#ffd6d6",
         color: "#ff4d4d",
         border: "none",
-        padding: "6px 10px",
-        borderRadius: "6px",
+        padding: "10px",
+        borderRadius: "8px",
         cursor: "pointer",
     },
-};
+
+    empty: {
+        opacity: 0.6,
+        marginTop: "20px",
+    },
+});
