@@ -1,5 +1,11 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import dayjs from "dayjs";
+import utcPlugin from "dayjs/plugin/utc";
+import tzPlugin from "dayjs/plugin/timezone";
+
+dayjs.extend(utcPlugin);
+dayjs.extend(tzPlugin);
 
 const API = import.meta.env.VITE_API_URL;
 
@@ -54,12 +60,14 @@ export default function Appointments() {
         try {
             setLoading(true);
 
+            const dateWithTimezone = dayjs(date).format();
+
             await axios.post(
                 API + "/appointments",
                 {
                     clientId,
                     serviceId,
-                    date,
+                    date: dateWithTimezone,
                 },
                 { headers }
             );
