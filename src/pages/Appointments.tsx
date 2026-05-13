@@ -59,7 +59,7 @@ export default function Appointments() {
                 {
                     clientId,
                     serviceId,
-                    date,
+                    date: new Date(date).toISOString(),
                 },
                 { headers }
             );
@@ -172,7 +172,9 @@ export default function Appointments() {
                             </small>
 
                             <small>
-                                {new Date(appointment.date).toLocaleString()}
+                                {new Date(appointment.date).toLocaleString("pt-BR", {
+                                    timeZone: "America/Sao_Paulo",
+                                })}
                             </small>
                         </div>
 
